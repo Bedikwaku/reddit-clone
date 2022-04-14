@@ -1,18 +1,24 @@
-import type { AppProps } from "next/app";
-import * as React from "react";
-// import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
-// import { CacheProvider } from "@emotion/react";
 import theme from "../theme";
-// import createEmotionCache from "../src/createEmotionCache";
+import type { AppProps } from "next/app";
+import { Amplify } from "aws-amplify";
 
-// Client-side cache, shared for the whole session of the user in the browser
-// const clientSideEmotionCache = createEmotionCache();
+import awsconfig from "../aws-exports";
+import AuthContext from "../context/AuthContext";
+
+Amplify.configure({ ...awsconfig, ssr: true });
 
 export default function MyApp({ Component, pageProps }: AppProps) {
-  // const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  useEffect(() => {
+    // Remove the server-side injected CSS
+    const jssStyles = document.querySelector("#jss-server-side");
+    if (jssStyles) {
+      jssStyles.parentElement.removeChild(jssStyles);
+    }
+  }, []);
 
   return (
     <>
@@ -20,11 +26,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <title>Reddit Clone</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <AuthContext>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </AuthContext>
     </>
   );
 }

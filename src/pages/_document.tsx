@@ -6,6 +6,7 @@ import { ServerStyleSheets } from "@material-ui/core/styles";
 // import createEmotionCache from '../src/createEmotionCache';
 
 export default class MyDocument extends Document {
+  static getInitialProps: (ctx: any) => Promise<any>;
   render() {
     return (
       <Html lang="en">
